@@ -1,0 +1,85 @@
+1. VPC (Virtual Private Cloud)
+● A logically isolated network in AWS.
+● Allows you to define IP ranges, subnets, route tables, and security groups.
+● Used for securely hosting resources like EC2, RDS, and EKS.
+
+2. EC2 (Elastic Compute Cloud)
+● Virtual machines in the cloud.
+● Allows scaling instances up/down as needed.
+● Supports various instance types optimized for compute, memory, or storage.
+
+3. RDS (Relational Database Service)
+● Managed relational database service (supports MySQL, PostgreSQL, SQL Server,
+etc.).
+● Handles automatic backups, scaling, and patching.
+● Multi-AZ support for high availability.
+
+4. IAM (Identity and Access Management)
+● Manages user permissions and roles.
+● Uses policies to control access to AWS services.
+● Supports MFA for security.
+
+5. EKS (Elastic Kubernetes Service)
+● Managed Kubernetes service.
+● Allows running Kubernetes clusters without managing control planes.
+● Integrates with AWS services like ALB, IAM, and CloudWatch.
+
+6. Route 53
+● Scalable Domain Name System (DNS).
+● Supports domain registration, health checks, and traffic routing.
+● Can route traffic based on latency, geolocation, or weighted policies.
+
+7. CloudWatch
+● Monitoring and logging service.
+● Collects metrics from AWS services and custom logs.
+● Can trigger alerts and automate actions using alarms.
+
+8. CloudTrail
+● Tracks API activity across AWS accounts.
+● Provides logs for security auditing and compliance.
+● Can be integrated with CloudWatch for real-time monitoring.
+
+9. Lambda
+● Serverless compute service.
+● Runs code in response to events (S3 uploads, API Gateway requests, etc.).
+● Automatically scales without needing to manage infrastructure.
+
+10. ECS (Elastic Container Service)
+● Managed container orchestration for Docker containers.
+● Supports Fargate (serverless) and EC2-backed clusters.
+● Integrates with ALB, IAM, and CloudWatch.
+
+
+Here are some expected interview questions on AWS VPC, IAM, Lambda, EC2,
+CloudWatch, ECS, and EKS, along with key points for answering them:
+
+=============================================================================================================================================================================================
+
+#VPC (Virtual Private Cloud)
+
+Basic Questions:
+
+✅ What is VPC in AWS?
+● A logically isolated network for AWS resources.
+● Allows control over subnets, route tables, gateways, and security groups.
+✅ What are the main components of a VPC?
+● Subnets (public/private)
+● Route tables
+● Internet Gateway (IGW)
+● NAT Gateway (for private subnets)
+● Security Groups & NACLs
+● VPC Peering & Transit Gateway
+✅ What is the difference between Security Groups and NACLs?
+● Security Groups → Stateful, applies at instance level, allows only "allow" rules.
+● NACLs (Network ACLs) → Stateless, applies at subnet level, allows "allow" &
+"deny" rules.
+
+Advanced Questions:
+
+✅ How do you connect two VPCs?
+● VPC Peering (direct connection)
+● Transit Gateway (central hub for multiple VPCs)
+● VPN / Direct Connect (connect to on-prem)
+✅ How do you make a private subnet access the internet?
+● Use a NAT Gateway in a public subnet.
+
