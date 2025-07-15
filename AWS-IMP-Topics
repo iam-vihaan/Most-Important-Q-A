@@ -62,6 +62,7 @@ Basic Questions:
 ✅ What is VPC in AWS?
 ● A logically isolated network for AWS resources.
 ● Allows control over subnets, route tables, gateways, and security groups.
+
 ✅ What are the main components of a VPC?
 ● Subnets (public/private)
 ● Route tables
@@ -69,6 +70,7 @@ Basic Questions:
 ● NAT Gateway (for private subnets)
 ● Security Groups & NACLs
 ● VPC Peering & Transit Gateway
+
 ✅ What is the difference between Security Groups and NACLs?
 ● Security Groups → Stateful, applies at instance level, allows only "allow" rules.
 ● NACLs (Network ACLs) → Stateless, applies at subnet level, allows "allow" &
@@ -80,6 +82,509 @@ Advanced Questions:
 ● VPC Peering (direct connection)
 ● Transit Gateway (central hub for multiple VPCs)
 ● VPN / Direct Connect (connect to on-prem)
+
 ✅ How do you make a private subnet access the internet?
 ● Use a NAT Gateway in a public subnet.
+
+ADVANCED QUESTIONS:
+
+VPC (Virtual Private Cloud)
+
+✅ How do you design a multi-region VPC architecture for high availability?
+● Use VPC peering or Transit Gateway for cross-region communication.
+● Deploy multi-region load balancing using Route 53 failover routing.
+● Implement replication for databases (RDS Multi-AZ, Aurora Global).
+● Use AWS Global Accelerator for low-latency access.
+
+✅ What are the different ways to connect an on-premises data center to an AWS
+VPC?
+● Site-to-Site VPN (IPsec tunnel, good for quick setup).
+● AWS Direct Connect (dedicated high-speed fiber link).
+● Transit Gateway with VPN or Direct Connect (centralized routing).
+
+✅ How does AWS VPC Flow Logs work? How do you analyze logs efficiently?
+● Captures IP traffic going in/out of VPC interfaces.
+● Logs stored in CloudWatch Logs or S3 for analysis.
+● Use AWS Athena or OpenSearch for querying logs efficiently.
+
+VPC (Virtual Private Cloud) - Deep Dive:
+
+Key Concepts
+
+● VPC is an isolated network within AWS where you can deploy cloud resources.
+● Components: Subnets, Route Tables, Internet Gateway (IGW), NAT Gateway,
+Security Groups, NACLs, VPC Peering, Transit Gateway.
+
+Best Practices
+
+✅ Use Multiple Subnets for High Availability
+● Deploy workloads across multiple AZs for fault tolerance.
+● Keep public-facing resources (ALB, NAT) in public subnets and databases, apps
+in private subnets.
+
+✅ Minimize Public Exposure
+● Avoid public IPs; instead, use bastion hosts or AWS Systems Manager Session
+Manager for SSH access.
+● Use VPC endpoints to connect privately to AWS services (e.g., S3, DynamoDB).
+
+✅ Implement Network Security
+● Use Security Groups (stateful, instance-level) and NACLs (stateless, subnet-level)
+to control access.
+● Limit SSH/RDP to known IPs and use IAM-based authentication for remote access.
+
+Architecture Design:
+
+Multi-AZ, Multi-Region Architecture
+
+🔹 Primary Region: Active workloads in one region.
+🔹 Secondary Region: Standby region with database replication (e.g., RDS Read
+Replicas, DynamoDB Global Tables).
+🔹 Traffic Routing: Route 53 failover routing to redirect traffic to the secondary region in
+case of failure
+
+=============================================================================================================================================================================================
+
+#IAM (Identity and Access Management)
+
+Basic Questions:
+
+✅ What is IAM in AWS?
+● A service for managing user access and permissions.
+
+✅ What are IAM Roles, Users, and Policies?
+● Users → Individual AWS accounts.
+● Roles → Assigned to AWS services (e.g., EC2, Lambda).
+● Policies → JSON-based permissions.
+
+✅ How does IAM ensure security?
+● MFA (Multi-Factor Authentication)
+● Least privilege principle
+● IAM Roles instead of storing credentials
+
+Advanced Questions:
+
+✅ What is an IAM Policy, and how does it work?
+● JSON document that defines permissions using Allow/Deny statements.
+
+✅ What are Managed vs Inline Policies?
+● Managed Policies → Reusable, AWS-defined or customer-defined.
+● Inline Policies → Attached to a single user/role.
+
+ADVANCED QUESTIONS:
+
+ IAM (Identity and Access Management)
+
+✅ How do you implement least privilege access in AWS IAM?
+● Use IAM policies with explicit least privilege permissions.
+● Enforce IAM Conditions (e.g., aws:SourceIp for restricting access).
+● Use Service Control Policies (SCPs) in AWS Organizations.
+● Rotate and audit IAM credentials using AWS IAM Access Analyzer.
+
+✅ How do you securely provide temporary AWS access to an external application?
+● Use IAM Roles with temporary security credentials.
+● Use AWS Security Token Service (STS) to generate short-lived credentials.
+● Restrict access using IAM conditions (e.g., time-based restrictions).
+
+✅ How do you detect and respond to IAM security incidents?
+● Enable CloudTrail to track IAM API calls.
+● Use AWS GuardDuty for anomaly detection (e.g., unusual access patterns).
+● Implement AWS Config rules to check for security violations.
+● Automate response using AWS Lambda & AWS Security Hub.
+
+IAM (Identity and Access Management) - Deep Dive:
+
+Key Concepts:
+
+● IAM Users (individual accounts), Roles (assigned to AWS services), Groups
+(collection of users), Policies (JSON permissions).
+● Federated Access via SSO, SAML, or OpenID for corporate identity providers.
+
+Best Practices:
+
+✅ Implement Least Privilege
+● Use IAM policies with only required permissions.
+● Restrict access using IAM Conditions (e.g., aws:SourceIp, aws:RequestTag).
+
+✅ Use IAM Roles Instead of Static Credentials
+● Attach IAM Roles to EC2, Lambda, or ECS tasks to grant temporary permissions.
+● Rotate credentials automatically using AWS Secrets Manager.
+
+✅ Enable Multi-Factor Authentication (MFA)
+● Enforce MFA for root users and privileged IAM accounts.
+● Use hardware MFA devices for higher security.
+
+Architecture Design
+
+IAM Policy Structure for a Secure Multi-Account Setup:
+
+🔹 AWS Organizations SCPs (Service Control Policies): Enforce global restrictions (e.g.,
+deny S3 bucket deletions).
+🔹 IAM Roles for Cross-Account Access: Allow secure access between accounts (e.g.,
+CI/CD pipeline in one account deploying to another).
+🔹 AWS SSO: Centralized user authentication across accounts.
+
+============================================================================================================================================================================================
+
+#Lambda (Serverless Compute)
+
+Basic Questions:
+
+✅ What is AWS Lambda?
+● A serverless compute service that runs code in response to events.
+
+✅ How does AWS Lambda work?
+● Triggered by AWS services (e.g., S3, API Gateway, CloudWatch).
+● Runs code in a fully managed environment.
+
+✅ What are some common Lambda use cases?
+● File processing (S3 events)
+● API backends (API Gateway + Lambda)
+● Real-time stream processing (Kinesis, DynamoDB Streams)
+
+Advanced Questions:
+
+✅ How do you secure an AWS Lambda function?
+● Attach IAM Roles with least privilege access.
+● Use VPC for private execution.
+● Enable Lambda function URL authentication if exposed externally.
+
+✅ How does Lambda scale?
+● Automatically scales with incoming requests.
+● Concurrency limit can be configured.
+
+✅ How can you reduce cold start issues in Lambda?
+● Use Provisioned Concurrency.
+● Use smaller function sizes.
+● Choose warm-up strategies (e.g., scheduled invocations).
+
+Advanced Questions:
+
+Lambda (Serverless Compute)
+
+✅ How does AWS Lambda scale under heavy load?
+● Lambda scales by launching multiple concurrent executions.
+● AWS provides soft and hard concurrency limits.
+● Use Provisioned Concurrency to minimize cold starts.
+
+✅ What are the best practices to optimize AWS Lambda performance?
+● Minimize cold starts by using smaller function sizes.
+● Use AWS SDK v3 to reduce package size.
+● Use ARM-based Lambda (Graviton2) for better performance.
+● Use async processing with SQS & SNS instead of waiting for responses.
+
+✅ How can you securely run AWS Lambda inside a VPC?
+● Attach the Lambda function to a VPC with private subnets.
+● Use a NAT Gateway to allow outbound internet access.
+● Enable VPC endpoints for AWS services (e.g., S3, DynamoDB).
+
+✅ How do you troubleshoot AWS Lambda failures?
+● Check CloudWatch Logs for execution logs.
+● Use AWS X-Ray for distributed tracing.
+● Enable DLQs (Dead Letter Queues) for handling failed event-driven Lambdas.
+
+AWS Lambda - Deep Dive:
+
+Key Concepts
+
+● Serverless compute that automatically scales.
+● Supports multiple triggers: S3 events, API Gateway, DynamoDB Streams, SQS,
+SNS, EventBridge.
+
+Best Practices:
+
+✅ Reduce Cold Starts
+● Use Provisioned Concurrency to keep functions warm.
+● Minimize function size and dependencies (use Lambda Layers).
+● Use ARM-based Lambda (Graviton2) for faster startup.
+
+✅ Optimize Execution Time
+● Streamline function execution by reducing API calls and batch processing data.
+● Use async processing (SNS/SQS) instead of synchronous requests.
+
+✅ Secure Lambda Functions
+● Use IAM Role with least privileges to restrict access.
+● Run in a VPC if accessing private resources.
+● Enable AWS X-Ray for tracing requests.
+
+Architecture Design:
+
+Event-Driven Serverless Architecture
+
+🔹 API Gateway + Lambda + DynamoDB: Serverless API backend.
+🔹 S3 + Lambda + Step Functions: Automated data processing pipeline.
+🔹 Kinesis Streams + Lambda: Real-time event processing.
+
+===========================================================================================================================================================================================
+
+EC2 (Elastic Compute Cloud)
+
+Basic Questions:
+
+✅ What is AWS EC2?
+● Virtual machine service on AWS.
+
+✅ What are different EC2 instance types?
+● Compute Optimized (C-series) → High CPU workloads.
+● Memory Optimized (R-series) → High RAM (e.g., databases).
+● Storage Optimized (I-series) → High-speed storage (e.g., analytics).
+● General Purpose (T-series) → Balanced workloads.
+
+✅ What is an EC2 Security Group?
+● A firewall controlling inbound/outbound traffic.
+
+Advanced Questions:
+
+✅ What are EC2 Spot, Reserved, and On-Demand instances?
+● Spot → Cheap, interruptible.
+● Reserved → Long-term commitment (1-3 years).
+● On-Demand → Pay-as-you-go.
+
+✅ How do you scale EC2 instances automatically?
+● Use Auto Scaling Groups (ASG) with policies.
+
+✅ What is an Elastic IP, and when do you use it?
+● A static IP assigned to an instance, useful for high availability setups
+
+Advanced Questions:
+EC2 (Elastic Compute Cloud)
+
+✅ How do you troubleshoot high CPU utilization on an EC2 instance?
+● Check CloudWatch CPU Utilization metrics.
+● Use top or htop inside the instance for real-time monitoring.
+● Identify processes using high CPU with AWS Systems Manager Run Command.
+● Scale up the instance type (e.g., from t3.medium → c5.large).
+● Enable Auto Scaling for dynamic resource allocation.
+
+✅ How do you configure EC2 Auto Scaling for high availability?
+● Use multiple Availability Zones (AZs).
+● Configure Auto Scaling Group (ASG) policies (CPU-based, schedule-based).
+● Attach an Elastic Load Balancer (ELB) for traffic distribution.
+● Use EC2 Spot Instances for cost-optimized scaling.
+
+✅ What are the security best practices for EC2 instances?
+● Apply IAM Roles instead of storing credentials inside EC2.
+● Restrict SSH access using Security Groups and bastion hosts.
+● Enable EC2 Instance Connect instead of password-based SSH.
+● Encrypt EBS volumes using AWS KMS.
+● Regularly patch instances using AWS Systems Manager Patch Manager.
+
+EC2 - Deep Dive:
+
+Key Concepts:
+
+● Instance Types: Compute Optimized (C5), Memory Optimized (R5), General
+Purpose (T3), Storage Optimized (I3).
+● Pricing Models: On-Demand, Reserved, Spot Instances, Savings Plans.
+
+Best Practices:
+
+✅ Auto Scaling & High Availability
+● Deploy instances in multiple AZs using Auto Scaling Groups (ASG).
+● Use Elastic Load Balancer (ALB, NLB) for traffic distribution.
+
+✅ Security & Monitoring
+● Enable AWS Inspector to scan EC2 instances for vulnerabilities.
+● Use EC2 Instance Connect for SSH instead of public IPs.
+● Store logs in CloudWatch Logs for auditing.
+
+Architecture Design:
+
+Highly Available EC2-Based Web Application
+
+🔹 Auto Scaling Group across multiple AZs.
+🔹 ALB for load balancing with HTTPS termination.
+🔹 RDS Multi-AZ for database redundancy.
+🔹 CloudFront + WAF for DDoS protection.
+
+============================================================================================================================================================================================
+
+CloudWatch (Monitoring & Logging)
+
+Basic Questions:
+
+✅ What is AWS CloudWatch?
+● A monitoring service for AWS resources and applications.
+
+✅ What are CloudWatch Alarms?
+● Alerting mechanism based on metrics.
+
+✅ What are CloudWatch Logs?
+● Stores log data from AWS services and custom applications.
+
+Advanced Questions:
+
+✅ How do you monitor EC2 with CloudWatch?
+● Use EC2 Detailed Monitoring for 1-minute metrics.
+● Enable CloudWatch Logs Agent to collect logs.
+
+✅ What’s the difference between CloudWatch and CloudTrail?
+● CloudWatch → Monitors performance (metrics, logs, alarms).
+● CloudTrail → Logs API calls for security/audit.
+
+Advanced Questions:
+
+CloudWatch (Monitoring & Logging)
+
+✅ How do you monitor and troubleshoot high memory usage in an EC2 instance
+using CloudWatch?
+● Enable CloudWatch Agent to collect memory usage metrics.
+● Use CloudWatch Alarms to trigger alerts when memory exceeds a threshold.
+● Enable AWS Lambda auto-remediation (e.g., restart instance on high memory).
+
+✅ What’s the difference between CloudWatch Logs, Metrics, and Events?
+● CloudWatch Logs → Stores log data from applications and AWS services.
+● CloudWatch Metrics → Stores numerical time-series data (e.g., CPU usage).
+● CloudWatch Events (EventBridge) → Triggers actions based on AWS events.
+
+✅ How do you monitor Lambda execution time using CloudWatch?
+● Check Duration metric in CloudWatch Metrics.
+● Set up a CloudWatch Alarm if execution time exceeds a threshold.
+● Enable AWS X-Ray to analyze execution bottlenecks.
+
+CloudWatch - Deep Dive:
+
+Key Concepts
+
+● CloudWatch Metrics: CPU, Memory, Network, Disk Usage.
+● CloudWatch Logs: Centralized logging for EC2, Lambda, ECS, API Gateway.
+● CloudWatch Alarms: Automated alerts based on thresholds.
+
+Best Practices:
+
+✅ Monitor Key Performance Indicators
+● Set up Custom Metrics (e.g., application errors, request latency).
+● Use CloudWatch Logs Insights for querying logs.
+
+✅ Automate Incident Response
+● Use CloudWatch Alarms + SNS for real-time notifications.
+● Trigger AWS Lambda for auto-remediation (e.g., restart an instance).
+
+==============================================================================================================================================================================================
+
+ECS (Elastic Container Service)
+
+Basic Questions:
+
+✅ What is AWS ECS?
+● A managed container orchestration service.
+
+✅ What are the key components of ECS?
+● Cluster → Logical grouping of container instances.
+● Task Definition → Defines container settings.
+● Service → Manages running tasks.
+
+✅ What is the difference between Fargate and EC2 launch types in ECS?
+● Fargate → Serverless, AWS manages infrastructure.
+● EC2 → You manage EC2 instances.
+
+Advanced Questions:
+
+✅ How do you scale ECS containers?
+● Use Service Auto Scaling.
+● Application Load Balancer (ALB) can distribute traffic.
+
+✅ How does ECS integrate with IAM?
+● Uses IAM Task Roles for permissions.
+
+Advanced Questions:
+
+ECS (Elastic Container Service)
+
+✅ How does ECS manage networking for containers?
+● Uses AWS VPC Networking Mode (awsvpc) for ENI-based networking.
+● Supports bridge mode and host mode for EC2-based tasks.
+● Load balances traffic using ALB + Target Groups.
+
+✅ How do you configure ECS service discovery?
+● Use AWS Cloud Map for dynamic service discovery.
+● Integrate with Route 53 DNS-based discovery.
+
+✅ How do you implement rolling updates in ECS?
+● Define minimum and maximum healthy percent for tasks.
+● Use ECS Service Auto Scaling to manage traffic shift.
+● Update tasks with blue/green deployments using AWS CodeDeploy.
+
+ECS (Elastic Container Service) - Deep-Dive:
+
+Key Concepts:
+
+● Launch Types: EC2-backed or Fargate (serverless).
+● Service Discovery: Uses AWS Cloud Map for automatic DNS resolution.
+
+Best Practices:
+
+✅ Use Fargate for Serverless Containers
+● No need to manage EC2 instances; scales automatically.
+
+✅ Secure ECS Containers
+● Use IAM Task Roles for least privilege access.
+● Scan images using Amazon Inspector for vulnerabilities.
+
+=============================================================================================================================================================================================
+
+EKS (Elastic Kubernetes Service)
+
+Basic Questions:
+
+✅ What is AWS EKS?
+● A managed Kubernetes service on AWS.
+
+✅ How is EKS different from ECS?
+● EKS → Uses Kubernetes, more flexibility.
+● ECS → AWS-native, simpler to manage.
+
+✅ What components does EKS manage?
+● The Kubernetes Control Plane (you manage worker nodes).
+
+Advanced Questions:
+
+✅ How do you secure an EKS cluster?
+● Use IAM Roles for Service Accounts (IRSA).
+● Enable RBAC (Role-Based Access Control).
+● Use private networking for worker nodes.
+
+✅ How does EKS handle scaling?
+● Cluster Autoscaler (scales worker nodes).
+● Horizontal Pod Autoscaler (HPA) (scales pods based on CPU/memory).
+
+Advanced Questions:
+
+EKS (Elastic Kubernetes Service)
+
+✅ How does EKS authenticate users and control access?
+● Uses IAM Roles for Service Accounts (IRSA) for pod-level permissions.
+● Integrates with RBAC (Role-Based Access Control) for Kubernetes permissions.
+● Uses AWS Authenticator to map IAM users to Kubernetes roles.
+
+✅ How do you implement auto-scaling in AWS EKS?
+● Cluster Autoscaler → Adds/removes worker nodes based on demand.
+● Horizontal Pod Autoscaler (HPA) → Scales pods based on CPU/memory.
+● Vertical Pod Autoscaler (VPA) → Adjusts pod resources dynamically.
+
+✅ How do you optimize EKS cluster costs?
+● Use EC2 Spot Instances for worker nodes.
+● Right-size nodes using AWS Compute Optimizer.
+● Enable Karpenter for automatic node scaling.
+
+✅ How do you secure an EKS cluster running in a VPC?
+● Restrict public access to the EKS API server.
+● Use Network Policies to restrict pod-to-pod communication.
+● Enable AWS WAF and Shield for DDoS protection.
+
+EKS (Elastic Kubernetes Service) -Deep Dive:
+
+Key Concepts:
+
+● Managed Kubernetes service that abstracts control plane management.
+● Supports autoscaling: Cluster Autoscaler, Horizontal Pod Autoscaler (HPA).
+
+Best Practices:
+
+✅ Optimize Cost with Spot Instances
+● Use Karpenter for automatic node scaling.
+
+✅ Secure Kubernetes Clusters
+● Enable IAM for Service Accounts (IRSA) to restrict pod-level access.
+● Use AWS PrivateLink to keep EKS API server private.
+====================================================================================================================================================================================
 
